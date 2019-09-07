@@ -75,3 +75,65 @@ class Solution {
     }
 }
 ```
+
+# 238. 除自身以外数组的乘积
+
+## 题目描述
+
+给定长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
+
+示例:
+
+输入: [1,2,3,4]
+输出: [24,12,8,6]
+说明: 请不要使用除法，且在 O(n) 时间复杂度内完成此题。
+
+进阶：
+你可以在常数空间复杂度内完成这个题目吗？（ 出于对空间复杂度分析的目的，输出数组不被视为额外空间。）
+
+## 思路
+
+	i  res:
+	1：1
+	2：1 1
+	3：1 1 2
+	4：1 1 2 6
+	
+	rightProduct = 1
+	i  res
+	3：1 1 2 6  rightProduct = 4
+	2：1 1 8 6  rightProduct = 12
+	1：1 12 8 6  rightProduct = 24
+	0：24 12 8 6
+
+> 第1个循环：把当前位左边所有值的乘积放在当前位（res[i] = res[0] * ... * res[i - 1]）
+> 第2个循环：把当前位右边所有值的乘积和当前位相乘作为当前位的值
+> （rightProduct = res[i + 1] * ... * res[res.length - 1]，res[i] = res[i] * rightProduct）
+
+## 实现
+
+```java
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return new int[0];
+        }
+        
+        int len = nums.length;
+        int[] res = new int[len]; //结果变量
+        res[0] = 1;
+        
+        for(int i=1; i<len; i++) {
+            res[i] = res[i - 1] * nums[i - 1]; //当前位左边所有值的乘积
+        }
+        
+        int rightProduct = 1; //当前位右边所有值的乘积
+        for(int i=len-1; i>=0; i--) {
+            res[i] = res[i] * rightProduct; //再乘上右边所有值的乘积
+            rightProduct = rightProduct * nums[i]; //前一位的右边所有值的乘积
+        }
+        
+        return res;
+    }
+}
+```
