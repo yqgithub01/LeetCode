@@ -137,3 +137,88 @@ class Solution {
     }
 }
 ```
+
+# 148. 排序链表
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if(head == null) {
+            return head;
+        }
+        
+        ListNode temp = head;
+        int N = 0;
+        while(temp != null) {
+            N++;
+            temp = temp.next;
+        }
+        
+        for(int sz=1; sz<N; sz=sz+sz) {
+            for(int low=0; low<N-sz; low=low+sz+sz) {
+                head = merger(head, low, low + sz - 1, Math.min(low + sz + sz - 1, N - 1));
+            }
+        }
+        
+        return head;
+    }
+    
+    private ListNode merger(ListNode node, int low, int mid, int high) {
+        int i = low;
+        int j = mid + 1;
+        ListNode list1 = node;
+        ListNode pre1 = node;
+        ListNode list2 = node;
+        ListNode pre2 = node;
+        
+        for(int k=0; k<(mid+1); k++) {
+            if(k < (low - 1)) {
+                pre1 = pre1.next;
+            }
+            if(k < low) {
+                list1 = list1.next;
+            }
+            if(k < mid) {
+                pre2 = pre2.next;
+            }
+            list2 = list2.next;
+        }
+        
+        while(true) {
+            if(i > mid || j > high) {
+                break;   
+            } else if(list1.val <= list2.val) {
+                pre1 = list1;
+                list1 = list1.next;
+                i++;
+            } else {
+                if(list1 == node) {
+                    pre1 = list2;
+                    list2 = list2.next;
+                    pre2.next = list2;
+                    pre1.next = list1;
+                    node = pre1;
+                } else {
+                    pre1.next = list2;
+                    list2 = list2.next;
+                    pre2.next = list2;
+                    pre1 = pre1.next;
+                    pre1.next = list1;
+                }
+                
+                j++;
+            }
+        }
+        
+        return node;
+    }
+}
+```
